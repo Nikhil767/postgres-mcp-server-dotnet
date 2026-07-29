@@ -46,7 +46,28 @@ The server enforces strict read-only execution at the application level:
 
 ---
 
-## 🛠️ Local Getting Started
+## 💻 Connecting to AI Clients
+
+### Claude Desktop Configuration
+Add the following to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "postgres-mcp": {
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "/path/to/postgres-mcp-server-dotnet/src/PostgresMcpServer"
+      ]
+    }
+  }
+}
+```
+---
+
+## 🛠️ Local Setup & Development
 
 ### Prerequisites
 * [.NET 10 SDK](https://dotnet.microsoft.com/download)
@@ -57,8 +78,28 @@ The server enforces strict read-only execution at the application level:
    ```bash
    git clone [https://github.com/Nikhil767/postgres-mcp-server-dotnet.git](https://github.com/Nikhil767/postgres-mcp-server-dotnet.git)
    cd postgres-mcp-server-dotnet
-   
-## ⚙️ Configuration & Setup
+	```
+2. **Configure Environment:**
+Set your connection string in src/PostgresMcpServer/appsettings.json or pass it via environment variable:
+```
+export ConnectionStrings__DefaultConnection="Host=YOUR_HOST;Database=YOUR_DB;Username=YOUR_USER;Password=YOUR_PASSWORD;Port=5432;"
+```
+3. **Run Unit Tests:**
+```
+dotnet test
+```
+4. **Start the MCP Server:**
+```
+dotnet run --project src/PostgresMcpServer
+```
+The endpoint listens at http://localhost:8080/mcp.
+
+---
+
+## 📮 API & Postman Testing
+A pre-configured Postman/Bruno collection is available in the /docs folder to test tool calls directly via HTTP JSON-RPC payloads.
+
+---
 
 ## 🤝 Contributing
 
@@ -74,28 +115,6 @@ git push origin feature/your-feature-name
 
 ## 📄 License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the [**MIT License**](https://github.com/Nikhil767/postgres-mcp-server-dotnet/blob/main/LICENSE).
 
-```
-MIT License
-
-Copyright (c) 2025 Nikhil
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+Thank you for reading to the end! 
