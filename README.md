@@ -75,19 +75,23 @@ Add the following to your `claude_desktop_config.json`:
 
 ### Setup
 1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/Nikhil767/postgres-mcp-server-dotnet.git](https://github.com/Nikhil767/postgres-mcp-server-dotnet.git)
-   cd postgres-mcp-server-dotnet
-	```
+```bash
+git clone [https://github.com/Nikhil767/postgres-mcp-server-dotnet.git](https://github.com/Nikhil767/postgres-mcp-server-dotnet.git)
+cd postgres-mcp-server-dotnet
+```
+
 2. **Configure Environment:**
 Set your connection string in src/PostgresMcpServer/appsettings.json or pass it via environment variable:
 ```
 export ConnectionStrings__DefaultConnection="Host=YOUR_HOST;Database=YOUR_DB;Username=YOUR_USER;Password=YOUR_PASSWORD;Port=5432;"
+export McpApiKey="YOUR_McpApiKey"
 ```
+
 3. **Run Unit Tests:**
 ```
 dotnet test
 ```
+
 4. **Start the MCP Server:**
 ```
 dotnet run --project src/PostgresMcpServer

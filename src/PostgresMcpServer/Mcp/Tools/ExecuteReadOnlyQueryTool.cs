@@ -26,6 +26,11 @@ public static class ExecuteReadOnlyQueryTool
 			throw new InvalidOperationException("Security Violation: Only read-only SELECT queries are allowed.");
 		}
 
+		if (!query.Contains("LIMIT", StringComparison.OrdinalIgnoreCase))
+		{
+			query += " LIMIT 100";
+		}
+
 		try
         {
             var rows = await queryExecutor.ExecuteQueryAsync(query);

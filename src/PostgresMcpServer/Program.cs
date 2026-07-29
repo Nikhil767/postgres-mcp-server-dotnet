@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,9 +48,33 @@ builder.Services.AddMcpServer()
 
 builder.Services.AddHealthChecks();
 
+builder.Services.AddRateLimiter(options =>
+{
+	options.AddFixedWindowLimiter("mcpPolicy", opt =>
+	{
+		opt.PermitLimit = 30; // 30 requests per minute
+		opt.Window = TimeSpan.FromMinutes(1);
+	});
+});
+
 var app = builder.Build();
 
-// Returns instantly with HTTP 200 "Healthy" if the app isn't deadlocked.
+app.Use(async (context, next) =>
+{
+	if (context.Request.Path.StartsWithSegments("/mcp"))
+	{
+		if (!context.Request.Headers.TryGetValue("X-MCP-API-KEY", out var providedKey) ||
+			providedKey != app.Configuration["McpApiKey"])
+		{
+			context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+			await context.Response.WriteAsync("Unauthorized: Invalid or missing X-MCP-API-KEY header.");
+			return;
+		}
+	}
+
+	await next();
+});
+
 app.MapHealthChecks("/api/alive", new HealthCheckOptions
 {
 	Predicate = check => check.Tags.Contains("live")
