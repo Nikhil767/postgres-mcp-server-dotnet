@@ -39,12 +39,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<DynamicQueryExecutor>();
 
 // Register MCP server with HTTP transport and scan for tools
-builder.Services.AddMcpServer()
-    .WithHttpTransport(options =>{
-		// Permits Postman per-request tool calls without rejecting strict _meta keys
-		options.Stateless = true;
-	})
-    .WithToolsFromAssembly();
+builder.Services.AddMcpServer().WithHttpTransport().WithToolsFromAssembly();
+//.WithHttpTransport(options =>{
+//	// Permits Postman per-request tool calls without rejecting strict _meta keys
+//	options.Stateless = true;
+//}).WithToolsFromAssembly();
 
 builder.Services.AddHealthChecks();
 
