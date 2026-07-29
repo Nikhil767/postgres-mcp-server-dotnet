@@ -65,15 +65,18 @@ app.Use(async (context, next) =>
 {
 	if (context.Request.Path.StartsWithSegments("/mcp"))
 	{
-		if (!context.Request.Headers.TryGetValue("X-MCP-API-KEY", out var providedKey) ||
-			providedKey != app.Configuration["McpApiKey"])
+		var expectedKey = app.Configuration["McpApiKey"];
+		// Check X-Api-Key OR X-MCP-API-KEY OR Authorization: Bearer <key>
+		bool isAuthorized = (context.Request.Headers.TryGetValue("X-Api-Key", out var apiKey) && apiKey == expectedKey) ||
+		(context.Request.Headers.TryGetValue("X-MCP-API-KEY", out var mcpApiKey) && mcpApiKey == expectedKey) ||
+		(context.Request.Headers.TryGetValue("Authorization", out var authHeader) && authHeader.ToString() == $"Bearer {expectedKey}");
+		if (!isAuthorized)
 		{
 			context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-			await context.Response.WriteAsync("Unauthorized: Invalid or missing X-MCP-API-KEY header.");
+			await context.Response.WriteAsync("Unauthorized: Invalid API Key");
 			return;
 		}
 	}
-
 	await next();
 });
 
