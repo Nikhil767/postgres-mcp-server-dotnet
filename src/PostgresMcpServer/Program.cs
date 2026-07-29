@@ -10,6 +10,9 @@ using PostgresMcpServer.Configuration;
 using PostgresMcpServer.Data;
 using System;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Bind Database Options
