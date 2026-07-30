@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace PostgresMcpServer.Data;
 
@@ -30,8 +27,7 @@ public class DynamicQueryExecutor
         {
             using var command = connection.CreateCommand();
             command.CommandText = sql;
-            using var reader = await command.ExecuteReaderAsync();
-            
+            using var reader = await command.ExecuteReaderAsync();            
             while (await reader.ReadAsync())
             {
                 var row = new Dictionary<string, object?>();

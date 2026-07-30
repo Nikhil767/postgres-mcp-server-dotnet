@@ -1,9 +1,7 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text.Json;
-using System.Threading.Tasks;
 using ModelContextProtocol.Server;
 using PostgresMcpServer.Data;
+using System.ComponentModel;
+using System.Text.Json;
 
 namespace PostgresMcpServer.Mcp.Tools;
 

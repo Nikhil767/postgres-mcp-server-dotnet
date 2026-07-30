@@ -1,18 +1,12 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using ModelContextProtocol.Server;
-using Npgsql;
 using PostgresMcpServer.Configuration;
 using PostgresMcpServer.Data;
-using System;
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+//AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+//AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,36 +14,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<DatabaseOptions>(
     builder.Configuration.GetSection(DatabaseOptions.SectionName));
 
-//// Configure DbContext with PostgreSQL Resiliency Retry logic
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//{
-//    var dbOptions = builder.Configuration
-//        .GetSection(DatabaseOptions.SectionName)
-//        .Get<DatabaseOptions>();
-        
-//    var connectionString = dbOptions?.ConnectionString 
-//        ?? throw new InvalidOperationException("Database ConnectionString is not configured.");
-
-//    options.UseNpgsql(connectionString, npgsqlOptions =>
-//    {
-//        npgsqlOptions.EnableRetryOnFailure(
-//            maxRetryCount: 5,
-//            maxRetryDelay: TimeSpan.FromSeconds(10),
-//            errorCodesToAdd: null);
-//    });
-//});
-
+// Configure DbContext with PostgreSQL Resiliency Retry logic
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-	var dbOptions = builder.Configuration.GetSection(DatabaseOptions.SectionName).Get<DatabaseOptions>();
-	var rawConnectionString = dbOptions?.ConnectionString ?? throw new InvalidOperationException("Database ConnectionString is not configured.");
-	// Enforce SSL/TLS settings via NpgsqlConnectionStringBuilder
-	var connBuilder = new NpgsqlConnectionStringBuilder(rawConnectionString)
-	{
-		SslMode = SslMode.Require,
-		TrustServerCertificate = true
-	};
-	options.UseNpgsql(connBuilder.ConnectionString, npgsqlOptions =>
+	var dbOptions = builder.Configuration
+		.GetSection(DatabaseOptions.SectionName)
+		.Get<DatabaseOptions>();
+
+	var connectionString = dbOptions?.ConnectionString
+		?? throw new InvalidOperationException("Database ConnectionString is not configured.");
+
+	options.UseNpgsql(connectionString, npgsqlOptions =>
 	{
 		npgsqlOptions.EnableRetryOnFailure(
 			maxRetryCount: 5,
