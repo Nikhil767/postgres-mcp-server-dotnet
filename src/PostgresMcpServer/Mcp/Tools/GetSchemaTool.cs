@@ -9,7 +9,7 @@ namespace PostgresMcpServer.Mcp.Tools;
 public static class GetSchemaTool
 {
     [McpServerTool(Name = "get_database_schema"), Description("Inspects the PostgreSQL database schema and returns a compact JSON representation of all user tables and columns.")]
-    public static async Task<string> GetSchemaAsync(DynamicQueryExecutor queryExecutor)
+    public static async Task<string> GetSchemaAsync(DynamicQueryExecutor queryExecutor, CancellationToken cancellationToken = default)
     {
         const string query = """
             SELECT 
@@ -31,7 +31,7 @@ public static class GetSchemaTool
                 c.ordinal_position;
             """;
 
-        var rows = await queryExecutor.ExecuteQueryAsync(query);
+        var rows = await queryExecutor.ExecuteQueryAsync(query, cancellationToken);
         
         var schemaMap = new Dictionary<string, Dictionary<string, List<object>>>();
 

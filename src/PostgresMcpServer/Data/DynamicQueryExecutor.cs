@@ -12,7 +12,7 @@ public class DynamicQueryExecutor
         _dbContext = dbContext;
     }
 
-    public async Task<List<Dictionary<string, object?>>> ExecuteQueryAsync(string sql)
+    public async Task<List<Dictionary<string, object?>>> ExecuteQueryAsync(string sql, CancellationToken cancellationToken = default)
     {
         var results = new List<Dictionary<string, object?>>();
         var connection = _dbContext.Database.GetDbConnection();
@@ -20,15 +20,16 @@ public class DynamicQueryExecutor
         var wasClosed = connection.State == ConnectionState.Closed;
         if (wasClosed)
         {
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
         }
 
         try
         {
             using var command = connection.CreateCommand();
             command.CommandText = sql;
-            using var reader = await command.ExecuteReaderAsync();            
-            while (await reader.ReadAsync())
+			command.CommandTimeout = 30;
+			using var reader = await command.ExecuteReaderAsync(cancellationToken);            
+            while (await reader.ReadAsync(cancellationToken))
             {
                 var row = new Dictionary<string, object?>();
                 for (int i = 0; i < reader.FieldCount; i++)

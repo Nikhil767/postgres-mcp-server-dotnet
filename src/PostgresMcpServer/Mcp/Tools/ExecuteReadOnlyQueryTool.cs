@@ -1,11 +1,7 @@
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ModelContextProtocol.Server;
 using PostgresMcpServer.Data;
-using System;
 using System.ComponentModel;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PostgresMcpServer.Mcp.Tools;
 
@@ -14,7 +10,7 @@ public static class ExecuteReadOnlyQueryTool
 {
 
     [McpServerTool(Name = "execute_read_only_query"), Description("Executes a read-only SQL query (SELECT) against the database and returns the result as a JSON string.")]
-    public static async Task<string> ExecuteQueryAsync(DynamicQueryExecutor queryExecutor, string query)
+    public static async Task<string> ExecuteQueryAsync(DynamicQueryExecutor queryExecutor, string query, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -33,7 +29,7 @@ public static class ExecuteReadOnlyQueryTool
 
 		try
         {
-            var rows = await queryExecutor.ExecuteQueryAsync(query);
+            var rows = await queryExecutor.ExecuteQueryAsync(query, cancellationToken);
             return JsonSerializer.Serialize(rows, new JsonSerializerOptions { WriteIndented = true });
         }
         catch (Exception ex)
